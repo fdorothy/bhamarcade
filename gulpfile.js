@@ -6,14 +6,17 @@ var gulp = require('gulp'),
     syncing = false,
     changes = false;
 
+var TIMEZONE = 'America/Chicago';
+var S3_SYNC_CRON = '00 * * * * *';
+var S3_BUCKET = 's3://fdorothy-bhamarcade';
+
 gulp.task('s3sync', () => {
-  console.log("syncing");
   if (!syncing) {
     syncing=true;
-    child_process.execFile("aws", ['s3', 'sync', 's3://fdorothy-bhamarcade', 'public'], (error, stdout, stderr) => {
+    child_process.execFile("aws", ['s3', 'sync', S3_BUCKET, 'public'], (error, stdout, stderr) => {
       console.log(stdout);
       if (error)
-        console.log("couldn't sync with s3://fdorothy-bhamaracde: " + error);
+        console.log("couldn't sync with s3://" + S3_BUCKET + ": " + error);
       syncing=false;
     });
   }
@@ -44,9 +47,9 @@ gulp.task('default', function() {
   gulp.run('server')
 
   // auto-sync files from s3
-  new CronJob('00 * * * * *', function() {
+  new CronJob(S3_SYNC_CRON, function() {
     gulp.run('s3sync')
-  }, null, true, 'America/Chicago');
+  }, null, true, TIMEZONE);
 
   gulp.watch(['./public/**/*'], function() {
     if (!changes) {
