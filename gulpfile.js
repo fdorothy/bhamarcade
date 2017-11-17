@@ -54,7 +54,7 @@ gulp.task('default', function() {
   gulp.watch(['./public/**/*'], function() {
     if (!changes) {
       changes = true;
-      startIfNotSyncing();
+      setTimeout(startIfNotSyncing, 1000)
     }
   })
 })
