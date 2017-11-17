@@ -1,22 +1,24 @@
 var gulp = require('gulp'),
     spawn = require('child_process').spawn,
-    node;
-var child_process = require('child_process');
-var CronJob = require('cron').CronJob;
+    child_process = require('child_process'),
+    CronJob = require('cron').CronJob,
+    node,
+    syncing = false,
+    changes = false;
 
 gulp.task('s3sync', () => {
   console.log("syncing");
-  child_process.execFile("aws", ['s3', 'sync', 's3://fdorothy-bhamarcade', 'public'], (error, stdout, stderr) => {
-    if (error)
-      console.log(`couldn't sync with s3://fdorothy-bhamaracde: ${error}`);
-    console.log(stdout);
-  });
+  if (!syncing) {
+    syncing=true;
+    child_process.execFile("aws", ['s3', 'sync', 's3://fdorothy-bhamarcade', 'public'], (error, stdout, stderr) => {
+      console.log(stdout);
+      if (error)
+        console.log("couldn't sync with s3://fdorothy-bhamaracde: " + error);
+      syncing=false;
+    });
+  }
 });
 
-/**
- * $ gulp server
- * description: launch the server. If there's a server already running, kill it.
- */
 gulp.task('server', function() {
   if (node) node.kill()
   node = spawn('node', ['index.js'], {stdio: 'inherit'})
@@ -27,11 +29,18 @@ gulp.task('server', function() {
   });
 })
 
-/**
- * $ gulp
- * description: start the development environment
- */
+function startIfNotSyncing() {
+  if (!syncing) {
+    gulp.run('server');
+    changes = false;
+  } else {
+    console.log("waiting to restart until finished syncing with s3...");
+    setTimeout(startIfNotSyncing, 5000)
+  }
+}
+
 gulp.task('default', function() {
+  gulp.run('s3sync')
   gulp.run('server')
 
   // auto-sync files from s3
@@ -40,12 +49,11 @@ gulp.task('default', function() {
   }, null, true, 'America/Chicago');
 
   gulp.watch(['./public/**/*'], function() {
-    gulp.run('server')
+    if (!changes) {
+      changes = true;
+      startIfNotSyncing();
+    }
   })
-  
-  // Need to watch for sass changes too? Just add another watch call!
-  // no more messing around with grunt-concurrent or the like. Gulp is
-  // async by default.
 })
 
 // clean up if an error goes unhandled.
