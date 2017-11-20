@@ -16,7 +16,7 @@ gulp.task('s3sync', () => {
     child_process.execFile("aws", ['s3', 'sync', S3_BUCKET, 'public'], (error, stdout, stderr) => {
       console.log(stdout);
       if (error)
-        console.log("couldn't sync with s3://" + S3_BUCKET + ": " + error);
+        console.log("couldn't sync with " + S3_BUCKET + ": " + error);
       syncing=false;
     });
   }
