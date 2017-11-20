@@ -13,7 +13,7 @@ var S3_BUCKET = 's3://fdorothy-bhamarcade';
 gulp.task('s3sync', () => {
   if (!syncing) {
     syncing=true;
-    child_process.execFile("aws", ['s3', 'sync', S3_BUCKET, 'public'], (error, stdout, stderr) => {
+    child_process.execFile("aws", ['s3', 'sync', S3_BUCKET, 'public', '--no-sign-request'], (error, stdout, stderr) => {
       console.log(stdout);
       if (error)
         console.log("couldn't sync with " + S3_BUCKET + ": " + error);
