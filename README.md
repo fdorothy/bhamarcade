@@ -10,6 +10,15 @@ You also need gulp-cli if you want the auto-sync with s3 stuff to work.
 
 ```sudo npm install --global gulp-cli```
 
+You ALSO need the AWS command line tools.
+
+```sudo apt-get install awscli```
+
+You'll need to setup credentials as well. Just leave the keys blank, and
+if asked for a region specify us-east-1.
+
+```aws credentials```
+
 ## running
 
 You can either run the server directly (this will not auto-update)
