@@ -2,13 +2,11 @@
 
 Birmingham Arcade game-selector server. This will automatically sync the games with an s3 controller, and serve them up through Node + Express.
 
+This will also bring up an electronjs window with the game menu.
+
 ## install
 
 ```npm i```
-
-You also need gulp-cli if you want the auto-sync with s3 stuff to work.
-
-```sudo npm install --global gulp-cli```
 
 You ALSO need the AWS command line tools.
 
@@ -21,11 +19,6 @@ if asked for a region specify us-east-1.
 
 ## running
 
-You can either run the server directly (this will not auto-update)
+This will bring up the server and an electron browser menu with the game menu:
 
-```node index.js```
-
-The default gulp task will start the server and keep it synced with s3 based
-on the cron timer. Take a look at gulpfile.js for more details.
-
-```gulp```
+```npm start```
