@@ -7,6 +7,9 @@ const gulp = require('gulp');
 const child_process = require('child_process');
 const url = require('url');
 const cron = require('cron');
+const browserify = require('browserify');
+const watchify = require('watchify');
+var fs = require('fs');
 
 // CONFIGURATION VARIABLES
 var CHECK_UPDATES = false;
@@ -20,6 +23,7 @@ var changes = false;
 let server;
 let socket;
 let electronWindow;
+let b; // browserify
 
 function startExpress() {
   if (socket)
@@ -70,6 +74,11 @@ function checkUpdates() {
   }
 };
 
+function bundle() {
+  console.log("rebundle");
+  b.bundle().pipe(fs.createWriteStream('public/bundle.js'));
+}
+
 function main() {
   checkUpdates();
   startExpress();
@@ -86,6 +95,21 @@ function main() {
       setTimeout(restart, 1000)
     }
   })
+
+  // setup watchify for menu/main.js -> public/bundle.js
+  b = browserify({
+    entries: ['menu/main.js'],
+    cache: {},
+    packageCache: {},
+  });
+  b.plugin(watchify, {
+    delay: 100,
+    poll: false
+  });
+
+  b.on('update', bundle);
+  bundle();
+
 }
 
 main();

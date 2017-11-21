@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron index.js",
-    "dev": "watchify menu/main.js -o public/bundle.js"
   },
   "repository": {
     "type": "git",
