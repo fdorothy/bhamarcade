@@ -25,8 +25,11 @@ function startExpress() {
     socket.close();
   server = express();
   server.use(express.static('public'))
-  socket = server.listen(3000, () => console.log("=== birmingham arcade ==="));
-  refreshBrowser();
+  var port = config.PORT || 3000
+  socket = server.listen(port, () => {
+    console.log("=== birmingham arcade (http://localhost:" + port + ") ===")
+    refreshBrowser();
+  });
 }
 
 function restart() {
@@ -74,14 +77,7 @@ function bundle() {
   b.bundle().pipe(fs.createWriteStream('public/bundle.js'));
 }
 
-function main() {
-  checkUpdates();
-  startExpress();
-  electron.app.on('ready', startBrowser)
-
-  // auto-sync files from s3 using a cron-like job
-  new cron.CronJob(config.CHECK_UPDATES_CRON, checkUpdates, true, config.TIMEZONE);
-
+function autoReload() {
   // auto restart server / browser on any changes
   gulp.watch(['./public/**/*'], function() {
     console.log("detected changes");
@@ -90,7 +86,9 @@ function main() {
       setTimeout(restart, 1000)
     }
   })
+}
 
+function autoBundle() {
   // setup watchify for menu/main.js -> public/bundle.js
   b = browserify({
     entries: ['menu/main.js'],
@@ -104,7 +102,18 @@ function main() {
 
   b.on('update', bundle);
   bundle();
+}
 
+function main() {
+  checkUpdates();
+  startExpress();
+  electron.app.on('ready', startBrowser)
+
+  // auto-sync files from s3 using a cron-like job
+  new cron.CronJob(config.CHECK_UPDATES_CRON, checkUpdates, true, config.TIMEZONE);
+
+  autoReload();
+  autoBundle();
 }
 
 main();
