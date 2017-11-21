@@ -1,6 +1,7 @@
 'use strict';
 
 // REQUIRES
+const config = require('./config.js');
 const electron = require('electron');
 const express = require('express');
 const gulp = require('gulp');
@@ -10,12 +11,6 @@ const cron = require('cron');
 const browserify = require('browserify');
 const watchify = require('watchify');
 var fs = require('fs');
-
-// CONFIGURATION VARIABLES
-var CHECK_UPDATES = false;
-var TIMEZONE = 'America/Chicago';
-var CHECK_UPDATES_CRON = '00 * * * * *';
-var S3_BUCKET = 's3://fdorothy-bhamarcade';
 
 // GLOBALS
 var syncing = false;
@@ -62,13 +57,13 @@ function startBrowser() {
 }
 
 function checkUpdates() {
-  if (!CHECK_UPDATES) return;
+  if (!config.CHECK_UPDATES) return;
   if (!syncing) {
     syncing=true;
-    child_process.execFile("aws", ['s3', 'sync', S3_BUCKET, 'public', '--no-sign-request'], (error, stdout, stderr) => {
+    child_process.execFile("aws", ['s3', 'sync', config.S3_BUCKET, 'public', '--no-sign-request'], (error, stdout, stderr) => {
       console.log(stdout);
       if (error)
-        console.log("couldn't sync with " + S3_BUCKET + ": " + error);
+        console.log("couldn't sync with " + config.S3_BUCKET + ": " + error);
       syncing=false;
     });
   }
@@ -85,7 +80,7 @@ function main() {
   electron.app.on('ready', startBrowser)
 
   // auto-sync files from s3 using a cron-like job
-  new cron.CronJob(CHECK_UPDATES_CRON, checkUpdates, true, TIMEZONE);
+  new cron.CronJob(config.CHECK_UPDATES_CRON, checkUpdates, true, config.TIMEZONE);
 
   // auto restart server / browser on any changes
   gulp.watch(['./public/**/*'], function() {
