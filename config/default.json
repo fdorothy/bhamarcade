@@ -1,0 +1,7 @@
+{
+  "port": 3000,
+  "check_updates": false,
+  "timezone": "America/Chicago",
+  "check_updates_cron": "00 * * * * *",
+  "s3_bucket": "s3://fdorothy-bhamarcade"
+}

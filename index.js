@@ -1,7 +1,7 @@
 'use strict';
 
 // REQUIRES
-const config = require('./config.js');
+const config = require('config');
 const electron = require('electron');
 const express = require('express');
 const gulp = require('gulp');
@@ -20,12 +20,16 @@ let socket;
 let electronWindow;
 let b; // browserify
 
+function getPort() {
+  return config.get('port') || 3000;
+}
+
 function startExpress() {
   if (socket)
     socket.close();
   server = express();
   server.use(express.static('public'))
-  var port = config.PORT || 3000
+  var port = getPort()
   socket = server.listen(port, () => {
     console.log("=== birmingham arcade (http://localhost:" + port + ") ===")
     refreshBrowser();
@@ -45,7 +49,7 @@ function restart() {
 function refreshBrowser() {
   if (electronWindow)
     electronWindow.loadURL(url.format({
-      pathname: 'localhost:3000',
+      pathname: 'localhost:' + getPort(),
       protocol: 'http:',
       slashes: true
     }));
@@ -60,13 +64,14 @@ function startBrowser() {
 }
 
 function checkUpdates() {
-  if (!config.CHECK_UPDATES) return;
+  if (!config.get('check_updates')) return;
   if (!syncing) {
+    bucket = config.get('s3_bucket');
     syncing=true;
-    child_process.execFile("aws", ['s3', 'sync', config.S3_BUCKET, 'public', '--no-sign-request'], (error, stdout, stderr) => {
+    child_process.execFile("aws", ['s3', 'sync', bucket, 'public', '--no-sign-request'], (error, stdout, stderr) => {
       console.log(stdout);
       if (error)
-        console.log("couldn't sync with " + config.S3_BUCKET + ": " + error);
+        console.log("couldn't sync with " + bucket + ": " + error);
       syncing=false;
     });
   }
@@ -110,7 +115,7 @@ function main() {
   electron.app.on('ready', startBrowser)
 
   // auto-sync files from s3 using a cron-like job
-  new cron.CronJob(config.CHECK_UPDATES_CRON, checkUpdates, true, config.TIMEZONE);
+  new cron.CronJob(config.get('check_updates_cron'), checkUpdates, true, config.get('timezone'));
 
   autoReload();
   autoBundle();
