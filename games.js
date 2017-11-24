@@ -1,31 +1,38 @@
 games = [
   {
-    "name": "Cave of Fear",
-    "alias": "cof",
-    "author": "Fredric Dorothy",
-    "thumbnail": "./public/games/cof/images/thumbnail.png",
-    "about": "./public/games/cof/docs/gameplay.md",
-    "source": {
-      "git": "http://github.com/fdorothy/caveoffear",
-      "branch": "bhamarcade"
-    },
-    "setup": "npm install && npm run deploy",
-    "start": "static-server . -p {{port}}",
-    "stop": "echo 'stopping'",
-    "url": "http://localhost:{{port}}"
-  }
+    "name": "game 1",
+    "alias": "g1",
+    "author": "John Smith",
+    "thumbnail": "./images/unknown.png",
+    "about": "this is game 1"
+  },
   {
-    "name": "minesweeper",
-    "alias": "ms",
-    "author": "Microsoft",
-    "thumbnail": "./public/games/ms/images/thumbnail.png",
-    "about": "./public/games/ms/docs/gameplay.md",
-    "source": {
-      "web": "http://microsoft.com/games/minesweeper-v1.0.2.zip"
-    },
-    "setup": "unzip minesweeper.zip",
-    "start": "./minesweeper-v1.0.2/mines.exe",
-    "stop": "echo 'stopping'",
+    "name": "game 2",
+    "alias": "g2",
+    "author": "John Smith",
+    "thumbnail": "./images/unknown.png",
+    "about": "this is game 2"
+  },
+  {
+    "name": "game 3",
+    "alias": "g3",
+    "author": "John Smith",
+    "thumbnail": "./images/unknown.png",
+    "about": "this is game 3"
+  },
+  {
+    "name": "game 4",
+    "alias": "g4",
+    "author": "John Smith",
+    "thumbnail": "./images/unknown.png",
+    "about": "this is game 4"
+  },
+  {
+    "name": "game 5",
+    "alias": "g5",
+    "author": "John Smith",
+    "thumbnail": "./images/unknown.png",
+    "about": "this is game 5"
   }
 ]
 

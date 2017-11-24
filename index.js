@@ -79,7 +79,13 @@ function checkUpdates() {
 
 function bundle() {
   console.log("rebundle");
-  b.bundle().pipe(fs.createWriteStream('public/bundle.js'));
+  var writer = fs.createWriteStream('public/bundle.js');
+  b.bundle((err, buf) => {
+    if (err)
+      console.log("error: " + err);
+    else
+      writer.write(buf);
+  });
 }
 
 function autoReload() {
@@ -96,7 +102,7 @@ function autoReload() {
 function autoBundle() {
   // setup watchify for menu/main.js -> public/bundle.js
   b = browserify({
-    entries: ['menu/main.js'],
+    entries: ['menu.js'],
     cache: {},
     packageCache: {},
   });
@@ -106,6 +112,7 @@ function autoBundle() {
   });
 
   b.on('update', bundle);
+  b.on('error', (err) => {console.log("error: ");});
   bundle();
 }
 
