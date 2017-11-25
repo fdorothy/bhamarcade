@@ -1,7 +1,7 @@
 // deps
 const config = require('./games.js');
-//const Charm = require('pixi-charm');
 const PIXI = require('pixi.js');
+const tweenManager = require('pixi-tween');
 
 // globals
 var renderer = PIXI.autoDetectRenderer(256, 256);
@@ -67,11 +67,15 @@ function setCurrentGame(gameIdx) {
     return;
   } else {
     if (tweener) {
-      tweener.pause();
       tweener = null;
     }
     currentGame = gameIdx;
-    gamesContainer.x = -(gameIdx+0.5)*spriteWidth + renderer.view.width/2;
+    //gamesContainer.x = -(gameIdx+0.5)*spriteWidth + renderer.view.width/2;
+    tweener = PIXI.tweenManager.createTween(gamesContainer);
+    tweener.time = 750;
+    tweener.easing = PIXI.tween.Easing.outCubic();
+    tweener.to({x: -(gameIdx+0.5)*spriteWidth + renderer.view.width/2});
+    tweener.start();
     // tweener = charm.slide(
     //   gamesContainer,
     //   -gameIdx*128-64 + renderer.view.width/2,
@@ -167,6 +171,7 @@ function gameLoop() {
   //charm.update();
 
   renderer.render(stage);
+  PIXI.tweenManager.update();
 }
 
 function main() {
