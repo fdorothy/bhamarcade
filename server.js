@@ -102,7 +102,7 @@ function autoReload() {
 function autoBundle() {
   // setup watchify for menu/main.js -> public/bundle.js
   b = browserify({
-    entries: ['menu.js'],
+    entries: ['client.js'],
     cache: {},
     packageCache: {},
   });
