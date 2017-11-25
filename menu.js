@@ -1,33 +1,29 @@
 // deps
-const config = require('./games.js');
-const PIXI = require('pixi.js');
-const tweenManager = require('pixi-tween');
+const games = require('./games.js'),
+      PIXI = require('pixi.js'),
+      tweenManager = require('pixi-tween')
+
+// consts
+const H_FONT = {fontfamily: "Arial", fontSize: 24, fill: "white"},
+      P_FONT = {fontfamily: "Arial", fontSize: 16, fill: "white"},
+      ITEM_SIZE = [196, 196];
 
 // globals
-var renderer = PIXI.autoDetectRenderer(256, 256);
-var loader = PIXI.loader;
-var resources = PIXI.loader.resources;
-var Sprite = PIXI.Sprite;
-var stage = new PIXI.Container();
-var graphics = new PIXI.Graphics();
-//var charm = new Charm(PIXI);
-var hFont = {fontfamily: "Arial", fontSize: 24, fill: "white"};
-var pFont = {fontfamily: "Arial", fontSize: 16, fill: "white"};
-var tweener = null;
-var sprite;
-var currentGame = 0;
-var games = [];
-var gamesContainer;
-var spriteWidth = 196;
-var spriteHeight = 196;
-var cursorSprite;
-var descSprite;
+let renderer,
+    stage,
+    items,
+    cursor,
+    desc,
+    itemIdx = 0;
 
 function setupRenderer() {
+  renderer = PIXI.autoDetectRenderer(256, 256);
+  document.body.appendChild(renderer.view);
   renderer.view.style.position = "absolute";
   renderer.view.style.display = "block";
   renderer.autoResize = true;
   renderer.resize(window.innerWidth, window.innerHeight);
+  stage = new PIXI.Container();
 }
 
 function keyboard(keyCode) {
@@ -62,131 +58,96 @@ function keyboard(keyCode) {
   return key;
 }
 
-function setCurrentGame(gameIdx) {
-  if (gameIdx < 0 || gameIdx >= games.length) {
-    return;
-  } else {
-    if (tweener) {
-      tweener = null;
-    }
-    currentGame = gameIdx;
-    //gamesContainer.x = -(gameIdx+0.5)*spriteWidth + renderer.view.width/2;
-    tweener = PIXI.tweenManager.createTween(gamesContainer);
-    tweener.time = 750;
-    tweener.easing = PIXI.tween.Easing.outCubic();
-    tweener.to({x: -(gameIdx+0.5)*spriteWidth + renderer.view.width/2});
-    tweener.start();
-    // tweener = charm.slide(
-    //   gamesContainer,
-    //   -gameIdx*128-64 + renderer.view.width/2,
-    //   gamesContainer.y,
-    //   60
-    // );
+function setCurrentGame(index) {
+  if (index >= 0 && index < games.length) {
+    itemIdx = index;
+    var t = PIXI.tweenManager.createTween(items);
+    t.time = 750;
+    t.easing = PIXI.tween.Easing.outCubic();
+    t.to({x: -(itemIdx+0.5)*ITEM_SIZE[0] + renderer.view.width/2});
+    t.start();
   }
 }
 
 function setupInput() {
-  var left = keyboard(37),
-      right = keyboard(39);
-  left.release = function() {
-    setCurrentGame(currentGame-1);
-  }
-  right.release = function() {
-    setCurrentGame(currentGame+1);
-  }
+  var left = keyboard(37), right = keyboard(39);
+  left.release = () => {setCurrentGame(itemIdx-1)};
+  right.release = () => {setCurrentGame(itemIdx+1)};
 }
 
-function createGameSprite(game) {
+function createItem(info) {
   var group = new PIXI.Container();
-  console.log("making sprites for " + game['name']);
+  group.info = info;
 
-  var name = new PIXI.Text(game['name'], hFont);
-  name.anchor.x = 0.5;
-  name.anchor.y = 0.0;
-  name.x = spriteWidth/2;
-  name.y = spriteHeight;
+  var name = new PIXI.Text(info['name'], H_FONT);
+  name.anchor.set(0.5, 0.0);
+  name.position.set(ITEM_SIZE[0]/2, ITEM_SIZE[1]);
   group.addChild(name);
 
-  var s = new Sprite(resources[game['thumbnail']].texture);
-  s.anchor.x = 0.5;
-  s.anchor.y = 0.5;
-  s.x = spriteWidth/2.0;
-  s.y = spriteHeight/2.0;
+  var s = new PIXI.Sprite(PIXI.loader.resources[info['thumbnail']].texture);
+  s.anchor.set(0.5, 0.5);
+  s.position.set(ITEM_SIZE[0]/2.0, ITEM_SIZE[1]/2.0);
   group.addChild(s);
-  group.info = game;
   return group;
 }
 
-function setupGames() {
-  var x = 0;
-  var y = 0;
-  gamesContainer = new PIXI.Container();
-  gamesContainer.x = renderer.view.width / 2 - spriteWidth / 2;
-  for (var i in config) {
-    var s = createGameSprite(config[i]);
-    s.x = x*spriteWidth;
-    s.y = y*spriteHeight;
-    gamesContainer.addChild(s);
-    x += 1;
-    games.push(s);
+function createItems() {
+  items = new PIXI.Container();
+  items.x = renderer.view.width / 2 - ITEM_SIZE[0] / 2;
+  for (var i=0; i<games.length; i++) {
+    var s = createItem(games[i]);
+    s.position.set(i*ITEM_SIZE[0], 0.0);
+    items.addChild(s);
   }
-  stage.addChild(gamesContainer);
+  stage.addChild(items);
 }
 
 function createCursorSprite() {
+  var graphics = new PIXI.Graphics();
   graphics.lineStyle(5, 0xFFFFFF, 1);
-  //graphics.beginFill(0x00);
-  graphics.drawRoundedRect(0, 0, spriteWidth, spriteHeight, 10);
-  //graphics.endFill();
-  //graphics.lineTo(0, 50);
-  //graphics.lineTo(50, 50);
-  // graphics.lineTo(spriteWidth, 0);
-  // graphics.lineTo(0, 0);
+  graphics.drawRoundedRect(0, 0, ITEM_SIZE[0], ITEM_SIZE[1], 10);
   var tex = renderer.generateTexture(graphics);
-  cursorSprite = new PIXI.Sprite(tex);
-  cursorSprite.anchor.x = 0.5;
-  cursorSprite.x = renderer.view.width / 2;
-  stage.addChild(cursorSprite);
+  cursor = new PIXI.Sprite(tex);
+  cursor.anchor.x = 0.5;
+  cursor.x = renderer.view.width / 2;
+  stage.addChild(cursor);
 }
 
 function createDescriptionSprite() {
-  descSprite = new PIXI.Text("blah blah", pFont);
-  descSprite.x = 50;
-  descSprite.y = spriteHeight + 50;
-  stage.addChild(descSprite);
+  desc = new PIXI.Text("blah blah", P_FONT);
+  desc.position.set(50, ITEM_SIZE[1] + 50);
+  stage.addChild(desc);
 }
 
 function setup() {
   setupInput();
   setupRenderer();
-  setupGames();
+  createItems();
   createCursorSprite();
   createDescriptionSprite();
   renderer.render(stage);
-  gameLoop();
+  animate();
 }
 
-function gameLoop() {
-  requestAnimationFrame(gameLoop);
-  //charm.update();
-
-  renderer.render(stage);
+function animate() {
+  requestAnimationFrame(animate);
   PIXI.tweenManager.update();
+  renderer.render(stage);
+}
+
+function getThumbnails() {
+  thumbnails = [];
+  games.forEach((game) => {
+    var img = game["thumbnail"];
+    if (img && !thumbnails.includes(img))
+      thumbnails.push(game["thumbnail"]);
+  });
+  return thumbnails;
 }
 
 function main() {
-  document.body.appendChild(renderer.view);
-
-  // load all thumbnails from the games
-  thumbnails = [];
-  config.forEach((item) => {
-    var img = item["thumbnail"];
-    if (img && !thumbnails.includes(img))
-      thumbnails.push(item["thumbnail"]);
-  });
-
-  loader
-    .add(thumbnails)
+  PIXI.loader
+    .add(getThumbnails())
     .load(setup);
 }
 
