@@ -2,11 +2,11 @@
   "name": "bhamarcade",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./lib/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron server.js",
-    "fetchGames": "node fetch_games.js"
+    "start": "electron ./lib/server.js",
+    "fetchGames": "node ./lib/fetch_games.js"
   },
   "repository": {
     "type": "git",
