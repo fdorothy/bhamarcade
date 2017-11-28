@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/fdorothy/bhamarcade#readme",
   "dependencies": {
+    "browserify-shim": "^3.8.14",
     "config": "^1.28.1",
     "cron": "^1.3.0",
     "electron": "^1.6.6",
@@ -27,5 +28,8 @@
     "pixi-tween": "^0.2.0",
     "pixi.js": "^4.6.1",
     "watchify": "^3.9.0"
+  },
+  "browserify-shim": {
+    "pixi.js": "global:PIXI"
   }
 }
