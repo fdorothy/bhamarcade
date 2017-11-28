@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron server.js"
+    "start": "electron server.js",
+    "fetchGames": "node fetch_games.js"
   },
   "repository": {
     "type": "git",

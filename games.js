@@ -1,10 +1,20 @@
 games = [
   {
-    "name": "game 1",
-    "alias": "g1",
-    "author": "John Smith",
-    "thumbnail": "./images/unknown.png",
-    "about": "this is game 1"
+    "name": "Cave of Fear",
+    "alias": "cave_of_fear",
+    "author": "Fredric Dorothy",
+    "thumbnail": "./images/cave_of_fear.png",
+    "about": "Puzzle / Adventure Game\n\n\
+\
+You have become stranded on an island, and you sure would like to get out! There are some\
+caves nearby with eerie moans emananting from the entrances. Maybe you can find a flare\
+gun or a radio nearby to call for help...",
+    "source": {
+      "git": "https://github.com/fdorothy/caveoffear.git",
+      "branch": "master"
+    },
+    "install": "./scripts/install.sh",
+    "run": "static-server --port {{port}} ./build"
   },
   {
     "name": "game 2",
