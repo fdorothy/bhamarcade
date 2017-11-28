@@ -5,7 +5,7 @@ const games = require('./games.js'),
 
 // consts
 const H_FONT = {fontfamily: "Arial", fontSize: 24, fill: "white"},
-      P_FONT = {fontfamily: "Arial", fontSize: 16, fill: "white"},
+      P_FONT = {fontfamily: "Arial", fontSize: 16, fill: "white", wordWrap: true},
       ITEM_SIZE = [196, 196];
 
 // globals
@@ -66,6 +66,7 @@ function setCurrentGame(index) {
     t.easing = PIXI.tween.Easing.outCubic();
     t.to({x: -(itemIdx+0.5)*ITEM_SIZE[0] + renderer.view.width/2});
     t.start();
+    desc.text = games[index].about;
   }
 }
 
@@ -87,6 +88,8 @@ function createItem(info) {
   var s = new PIXI.Sprite(PIXI.loader.resources[info['thumbnail']].texture);
   s.anchor.set(0.5, 0.5);
   s.position.set(ITEM_SIZE[0]/2.0, ITEM_SIZE[1]/2.0);
+  s.width = ITEM_SIZE[0];
+  s.height = ITEM_SIZE[1];
   group.addChild(s);
   return group;
 }
@@ -116,6 +119,7 @@ function createCursorSprite() {
 function createDescriptionSprite() {
   desc = new PIXI.Text("blah blah", P_FONT);
   desc.position.set(50, ITEM_SIZE[1] + 50);
+  desc.style.wordWrapWidth = renderer.view.width - 100;
   stage.addChild(desc);
 }
 
@@ -125,6 +129,7 @@ function setup() {
   createItems();
   createCursorSprite();
   createDescriptionSprite();
+  setCurrentGame(itemIdx);
   renderer.render(stage);
   animate();
 }
