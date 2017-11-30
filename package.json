@@ -27,6 +27,8 @@
     "gulp": "^3.9.1",
     "pixi-tween": "^0.2.0",
     "pixi.js": "^4.6.1",
+    "rimraf": "^2.6.2",
+    "string-template": "^1.0.0",
     "watchify": "^3.9.0"
   },
   "browserify-shim": {
