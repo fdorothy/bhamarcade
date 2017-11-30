@@ -29,6 +29,7 @@
     "pixi.js": "^4.6.1",
     "rimraf": "^2.6.2",
     "string-template": "^1.0.0",
+    "url-exists": "^1.0.3",
     "watchify": "^3.9.0"
   },
   "browserify-shim": {
