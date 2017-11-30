@@ -72,10 +72,19 @@ function setCurrentGame(index) {
   }
 }
 
+function playGame(index) {
+  if (index >= 0 && index < games.length) {
+    window.location.href = games[index].url;
+  }
+}
+
 function setupInput() {
-  var left = keyboard(37), right = keyboard(39);
+  var left = keyboard(37),
+      right = keyboard(39),
+      space = keyboard(32);
   left.release = () => {setCurrentGame(itemIdx-1)};
   right.release = () => {setCurrentGame(itemIdx+1)};
+  space.release = () => {playGame(itemIdx)};
 }
 
 function createItem(info) {
@@ -178,7 +187,7 @@ gun or a radio nearby to call for help...",
       "branch": "master"
     },
     "install": "./scripts/install.sh",
-    "run": "static-server --port {{port}} ./build"
+    "url": "https://fdorothy.github.io/caveoffear/"
   },
   {
     "name": "game 2",
